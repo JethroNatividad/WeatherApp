@@ -2,6 +2,7 @@ package com.example.weatherap;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -98,5 +99,30 @@ public class WeatherDataService {
         });
 
         MySingleton.getInstance(context).addToRequestQueue(request);
+    }
+
+    public void getCityWeatherByName(String cityName, GetCityWeatherResponse getCityWeatherResponse){
+        getCityId(cityName, new WeatherDataService.GetCityIdResponse() {
+            @Override
+            public void onError(String errorMessage) {
+//                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                getCityWeatherResponse.onError(errorMessage);
+            }
+
+            @Override
+            public void onResponse(String cityId, String title) {
+                getCityWeatherById(cityId, new WeatherDataService.GetCityWeatherResponse() {
+                    @Override
+                    public void onError(String errorMessage) {
+                        getCityWeatherResponse.onError(errorMessage);
+                    }
+
+                    @Override
+                    public void onResponse(List<WeatherReportModel> weather_report_list) {
+                        getCityWeatherResponse.onResponse(weather_report_list);
+                    }
+                });
+            }
+        });
     }
 }

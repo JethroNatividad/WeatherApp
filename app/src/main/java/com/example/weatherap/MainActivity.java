@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String cityId, String title) {
                         Toast.makeText(MainActivity.this, "Country ID of " + title + " is " + cityId, Toast.LENGTH_SHORT).show();
+                        et_input.setText(cityId);
                     }
                 });
             }
@@ -79,8 +80,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(List<WeatherReportModel> weather_report_list) {
                         ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, weather_report_list);
                         lv_weatherList.setAdapter(arrayAdapter);
-//                        Toast.makeText(MainActivity.this, weather_report_list.toString(), Toast.LENGTH_SHORT).show();
-
                     }
                 });
             }
@@ -90,7 +89,20 @@ public class MainActivity extends AppCompatActivity {
         btn_getCityWeatherByName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, et_input.getText().toString(), Toast.LENGTH_SHORT).show();
+                String input = et_input.getText().toString();
+                weatherDataService.getCityWeatherByName(input, new WeatherDataService.GetCityWeatherResponse() {
+                    @Override
+                    public void onError(String errorMessage) {
+                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(List<WeatherReportModel> weather_report_list) {
+                        ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, weather_report_list);
+                        lv_weatherList.setAdapter(arrayAdapter);
+
+                    }
+                });
             }
         });
     }
