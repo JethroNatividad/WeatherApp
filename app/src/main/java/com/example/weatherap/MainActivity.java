@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -21,6 +22,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Button btn_getCityId, btn_getCityWeatherById, btn_getCityWeatherByName;
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String input = et_input.getText().toString();
-                weatherDataService.getCityId(input, new WeatherDataService.WeatherDataServiceListener() {
+                weatherDataService.getCityId(input, new WeatherDataService.GetCityIdResponse() {
                     @Override
                     public void onError(String errorMessage) {
                         Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
@@ -65,7 +68,21 @@ public class MainActivity extends AppCompatActivity {
         btn_getCityWeatherById.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, et_input.getText().toString(), Toast.LENGTH_SHORT).show();
+                String input = et_input.getText().toString();
+                weatherDataService.getCityWeatherById(input, new WeatherDataService.GetCityWeatherResponse() {
+                    @Override
+                    public void onError(String errorMessage) {
+                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(List<WeatherReportModel> weather_report_list) {
+                        ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, weather_report_list);
+                        lv_weatherList.setAdapter(arrayAdapter);
+//                        Toast.makeText(MainActivity.this, weather_report_list.toString(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
             }
         });
 
